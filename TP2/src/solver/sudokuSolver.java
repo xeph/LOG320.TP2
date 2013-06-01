@@ -1,13 +1,12 @@
 package solver;
 
-public class sudokuSolver
+public class SudokuSolver
 {
 	private static final byte NINE = 9;
 	private static final byte THREE = 3;
 	private static final byte ONE = 1;
 	private static final byte ZERO = 0;
     private static byte[][] grid = new byte[NINE][NINE];
-    private static int node = 0;
 
     public void solve()
     {
@@ -18,16 +17,13 @@ public class sudokuSolver
 		long endTime = System.currentTimeMillis();
     	writeMatrix(grid);
 		System.out.println("Execution time : " + (endTime - startTime) + " milliseconds");
-		System.out.println("Number of nodes : " + node);
     }
     
     // iterate through each row of a column
     // after a column is done, begin the next
     // column at the first row
     private static final boolean solve(byte row, byte column)
-    {
-    	node++;
-    	
+    {	
     	// check if last row is done, if yes change column
     	if (row == NINE) {
     		row = ZERO;
@@ -79,7 +75,7 @@ public class sudokuSolver
         System.out.println(" -----------------------");
     }
 
-    private static final boolean validateInsert(byte row, byte column, byte number)
+    private static final boolean validateInsert(final byte row, final byte column, final byte number)
     {
         boolean isValid = false;
 
@@ -98,7 +94,7 @@ public class sudokuSolver
         return isValid;
     }
 
-    private static final boolean validateRow(byte row, byte number)
+    private static final boolean validateRow(final byte row, final byte number)
     {
         for (byte column = ZERO; column < NINE; column++)
         {
@@ -108,7 +104,7 @@ public class sudokuSolver
         return true;
     }
 
-    private static final boolean validateColumn(byte column, byte number)
+    private static final boolean validateColumn(final byte column, final byte number)
     {
         for (byte row = ZERO; row < NINE; row++)
         {
@@ -118,7 +114,7 @@ public class sudokuSolver
         return true;
     }
 
-    private static final boolean validateSquare(byte row, byte column, byte number)
+    private static final boolean validateSquare(final byte row, final byte column, final byte number)
     {
         byte r = (byte) ((row / THREE) * THREE);
         byte c = (byte) ((column / THREE) * THREE);
