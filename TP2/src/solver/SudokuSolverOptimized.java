@@ -12,15 +12,15 @@ public class SudokuSolverOptimized {
 		System.out.println("Original sudoku");
 		writeGrid();
 		
-    	long startTime = System.currentTimeMillis();
+    	long startTime = System.nanoTime();
     	solve((byte) 0, (byte) 0);
-		long endTime = System.currentTimeMillis();
+		long endTime = System.nanoTime();
 		
 		System.out.println("");
 		System.out.println("Solved sudoku");
 		writeGrid();
 		
-		System.out.println("Execution time : " + (endTime - startTime) + " milliseconds");
+		System.out.println("Execution time : " + (endTime - startTime) + " nanoseconds");
 	}
 	
 	private static final void solve(byte row, byte column)
@@ -28,9 +28,85 @@ public class SudokuSolverOptimized {
 		
 	}
 	
-	private static final void getPossibleValues()
+	/**
+	 * Check if a value can be set or not
+	 * @param row from 0 to 8
+	 * @param column from 0 to 8
+	 * @param number from 1 to 9
+	 * @return number can be set or not
+	 */
+	private static final boolean checkLegalValue(final byte row, final byte column, final byte number)
 	{
-		
+		boolean isValid = false;
+
+        isValid = validateRow(row, number);
+
+        if (!isValid)
+        	return isValid;
+        
+        isValid = validateColumn(column, number);
+        
+        if (!isValid)
+        	return isValid;
+        
+        isValid = validateSquare(row, column, number);
+
+        return isValid;
+	}
+	
+	/**
+	 * Check if the number is valid in the row
+	 * @param row from 0 to 8
+	 * @param number from 0 to 8
+	 * @return number is valid or not
+	 */
+	private static final boolean validateRow(final byte row, final byte number)
+	{
+		for (byte column = 0; column < 9; column++)
+        {
+            if (getItem(row, column) == number)
+                return false;
+        }
+        return true;
+	}
+	
+	/**
+	 * Check if the number is valid in the column
+	 * @param column from 0 to 8
+	 * @param number from 0 to 8
+	 * @return number is valid or not
+	 */
+	private static final boolean validateColumn(final byte column, final byte number)
+	{
+		for (byte row = 0; row < 9; row++)
+        {
+            if (getItem(row, column) == number)
+                return false;
+        }
+        return true;	
+	}
+	
+	/**
+	 * Check if the number is valid in the square
+	 * @param row from 0 to 8
+	 * @param column from 0 to 8
+	 * @param number from 1 to 9
+	 * @return number is valid or not
+	 */
+	private static final boolean validateSquare(final byte row, final byte column, final byte number)
+	{
+		byte r = (byte) ((row / 3) * 3);
+        byte c = (byte) ((column / 3) * 3);
+
+        for (byte i = 0; i < 3; i++)
+        {
+            for (byte j = 0; j < 3; j++)
+            {
+                if (getItem((byte) (r+i), (byte) (c+j)) == number)
+                    return false;
+            }
+        }
+        return true;
 	}
 	
 	/**
