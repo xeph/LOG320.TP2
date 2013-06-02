@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public class SudokuSolverOptimized {
 	private static byte[] grid = new byte[81];
+	private static byte[][] legalValues = new byte[81][];
 	
 	public static final void solve()
 	{
@@ -12,89 +13,83 @@ public class SudokuSolverOptimized {
 		System.out.println("Original sudoku");
 		writeGrid();
 		
-    	long startTime = System.nanoTime();
+    	long startTime = System.currentTimeMillis();
     	solve((byte) 0, (byte) 0);
-		long endTime = System.nanoTime();
+		long endTime = System.currentTimeMillis();
 		
 		System.out.println("");
 		System.out.println("Solved sudoku");
 		writeGrid();
 		
-		System.out.println("Execution time : " + (endTime - startTime) + " nanoseconds");
+		System.out.println("Execution time : " + (endTime - startTime) + " milliseconds");
 	}
 	
-	private static final void solve(byte row, byte column)
+	/**
+	 * Solve the sudoku
+	 * @param row current row
+	 * @param column current column
+	 * @return success or not
+	 */
+	private static final boolean solve(byte row, byte column)
 	{
+		// check if last row is done, if yes change column
+    	if (row == 9) {
+    		row = 0;
+    		column += 1;
+    		if (column == 9) // sudoku solved
+            {
+            	return true;
+            }
+    	}
+    	
+    	// if node already done
+    	if (getItem(row, column) != 0)
+    	{
+    		return solve((byte) (row + 1), column);
+    	}
+
+        // if node not done check for a valid number
+    	getLegalValuesForCell(row, column);
+    	byte[] values = getLegalValues(row, column);
+    	
+    	for (byte number = 0; number < values.length; number++)
+    	{
+		    setItem(row, column, values[number]);
+		    if (solve((byte) (row + 1), column))
+		    {
+		    	return true;
+		    }
+    	}
+        
+    	setItem(row, column, (byte) 0); // backtracking
+    	return false;
+	}
+	
+	/**
+	 * Get the possible values for a cell
+	 * @param row from 0 to 8
+	 * @param column from 0 to 8
+	 */
+	private static final void getLegalValuesForCell(final byte row, final byte column)
+	{
+		java.util.Stack<Byte> possibleValues = new java.util.Stack<Byte>();
+		java.util.ArrayList<Byte> val = new java.util.ArrayList<Byte>();
 		
-	}
-	
-	/**
-	 * Check if a value can be set or not
-	 * @param row from 0 to 8
-	 * @param column from 0 to 8
-	 * @param number from 1 to 9
-	 * @return number can be set or not
-	 */
-	private static final boolean checkLegalValue(final byte row, final byte column, final byte number)
-	{
-		boolean isValid = false;
-
-        isValid = validateRow(row, number);
-
-        if (!isValid)
-        	return isValid;
-        
-        isValid = validateColumn(column, number);
-        
-        if (!isValid)
-        	return isValid;
-        
-        isValid = validateSquare(row, column, number);
-
-        return isValid;
-	}
-	
-	/**
-	 * Check if the number is valid in the row
-	 * @param row from 0 to 8
-	 * @param number from 0 to 8
-	 * @return number is valid or not
-	 */
-	private static final boolean validateRow(final byte row, final byte number)
-	{
-		for (byte column = 0; column < 9; column++)
-        {
-            if (getItem(row, column) == number)
-                return false;
-        }
-        return true;
-	}
-	
-	/**
-	 * Check if the number is valid in the column
-	 * @param column from 0 to 8
-	 * @param number from 0 to 8
-	 * @return number is valid or not
-	 */
-	private static final boolean validateColumn(final byte column, final byte number)
-	{
-		for (byte row = 0; row < 9; row++)
-        {
-            if (getItem(row, column) == number)
-                return false;
-        }
-        return true;	
-	}
-	
-	/**
-	 * Check if the number is valid in the square
-	 * @param row from 0 to 8
-	 * @param column from 0 to 8
-	 * @param number from 1 to 9
-	 * @return number is valid or not
-	 */
-	private static final boolean validateSquare(final byte row, final byte column, final byte number)
-	{
+		// check row
+		for (byte c = 0; c < 9; c++)
+		{
+			if (getItem(row, c) != 0)
+				possibleValues.add(getItem(row, c));
+		}
+		
+		// check column
+		for (byte r = 0; r < 9; r++)
+		{
+			if (getItem(r, column) != 0)
+				possibleValues.add(getItem(r, column));
+		}
+		
+		// check square
 		byte r = (byte) ((row / 3) * 3);
         byte c = (byte) ((column / 3) * 3);
 
@@ -102,11 +97,27 @@ public class SudokuSolverOptimized {
         {
             for (byte j = 0; j < 3; j++)
             {
-                if (getItem((byte) (r+i), (byte) (c+j)) == number)
-                    return false;
+                if (getItem((byte) (r+i), (byte) (c+j)) != 0)
+                    possibleValues.add(getItem((byte) (r+i), (byte) (c+j)));
             }
         }
-        return true;
+        
+        // get non present value
+        for (byte i = 1; i <= 9; i++)
+        {
+        	if(!possibleValues.contains(i))
+        		val.add(i);
+        }
+        
+        // insert new array of possibilities
+        byte[] values = new byte[val.size()];
+        
+        for (int i = 0; i < val.size(); i++)
+        {
+        	  values[i] = val.get(i);
+        }
+        
+        setLegalValues(row, column, values);
 	}
 	
 	/**
@@ -153,6 +164,31 @@ public class SudokuSolverOptimized {
 		grid[(row*9)+column] = number;
 	}
 	
+	/**
+	 * Return item at specific position
+	 * @param row from 0 to 8
+	 * @param column from 0 to 8
+	 * @return item
+	 */
+	private static final byte[] getLegalValues(final byte row, final byte column)
+	{
+		return legalValues[(row*9)+column];
+	}
+	
+	/**
+	 * Set item at specific position
+	 * @param row from 0 to 8
+	 * @param column from 0 to 8
+	 * @param number from 0 to 9
+	 */
+	private static final void setLegalValues(final byte row, final byte column, final byte[] values)
+	{
+		legalValues[(row*9)+column] = values;
+	}
+	
+	/**
+	 * Initialize the sudoku
+	 */
 	private static final void initializeGrid()
 	{
 		Arrays.fill(grid, (byte) 0);
