@@ -139,7 +139,9 @@ public class SudokuSolver
         	  grid[row][col] = 0 ;
 
        // Create the initial situation
-       grid[0][0] = 9 ;
+       
+       //easy puzzle
+       /*grid[0][0] = 9 ;
        grid[0][4] = 2 ;
        grid[0][6] = 7 ;
        grid[0][7] = 5 ;
@@ -174,6 +176,32 @@ public class SudokuSolver
        grid[8][1] = 8 ;
        grid[8][2] = 2 ;
        grid[8][4] = 4 ;
-       grid[8][8] = 6 ;
+       grid[8][8] = 6 ;*/
+       
+       //hard puzzle
+       grid[1][5] = 3;
+       grid[1][7] = 8;
+       grid[1][8] = 5;
+       
+       grid[2][2] = 1;
+       grid[2][4] = 2;
+       
+       grid[3][3] = 5;
+       grid[3][5] = 7;
+       
+       grid[4][2] = 4;
+       grid[4][6] = 1;
+       
+       grid[5][1] = 9;
+       
+       grid[6][1] = 5;
+       grid[6][7] = 7;
+       grid[6][8] = 3;
+       
+       grid[7][2] = 2;
+       grid[7][4] = 1;
+       
+       grid[8][4] = 4;
+       grid[8][8] = 9;
     }
 }
