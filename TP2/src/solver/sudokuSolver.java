@@ -11,12 +11,12 @@ public class SudokuSolver
     public void solve()
     {
     	createModel();
-    	writeMatrix(grid);
-    	long startTime = System.currentTimeMillis();
+    	//writeMatrix(grid);
+    	long startTime = System.nanoTime();
     	solve(ZERO,ZERO);
-		long endTime = System.currentTimeMillis();
+    	long endTime = System.nanoTime();
     	writeMatrix(grid);
-		System.out.println("Execution time : " + (endTime - startTime) + " milliseconds");
+		System.out.println("Execution time : " + ((double)endTime/1000000 - (double)startTime/1000000) + " milliseconds");
     }
     
     // iterate through each row of a column
