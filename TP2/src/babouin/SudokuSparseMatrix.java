@@ -54,10 +54,10 @@ public class SudokuSparseMatrix {
 			}
 		}
 		
-		for( int row = 0; row < 100; row++ ) {
+		for( int row = 200; row < 400; row++ ) {
 			System.out.println("");
-			for( int col = 0; col < 100; col++ ) {
-				System.out.print(this.testGrid[row][col]);
+			for( int col = 0; col < 324; col++ ) {
+				System.out.print(this.testGrid[row][col] == 0 ? " " : this.testGrid[row][col]);
 			}
 		}
 	}
@@ -132,12 +132,10 @@ public class SudokuSparseMatrix {
 			if (!hasEmptyColumn) {
 				cover(currentColumnNode);
 				
-				for (SudokuSparseMatrixNode rowNode = currentColumnNode.getBottomNode(); rowNode != currentColumnNode; rowNode = rowNode.getBottomNode()) {
+				for (SudokuSparseMatrixNode rowNode = currentColumnNode.getBottomNode(); rowNode != currentColumnNode && !this.hasBeenPrinted; rowNode = rowNode.getBottomNode()) {
 					this.solution.add(rowNode);
-					System.out.println("Row");
 					for (SudokuSparseMatrixNode rightNode = rowNode.getRightNode(); rightNode != rowNode; rightNode = rightNode.getRightNode()) {
 						cover(rightNode.getColumnNode());
-						System.out.println("Right");
 					}
 					
 					search();
@@ -151,8 +149,10 @@ public class SudokuSparseMatrix {
 						this.solution.pop();
 					}
 				}
-			} else {
-				System.out.println("Empty column. Column number : " + currentColumnNode.getColumn());
+				
+				if (!this.hasBeenPrinted) {
+					uncover(currentColumnNode);
+				}
 			}
 		}
 	}
@@ -266,12 +266,12 @@ public class SudokuSparseMatrix {
 	private final void uncover(SudokuSparseMatrixNode columnNode) {
 		for (SudokuSparseMatrixNode rowNode = columnNode.getTopNode(); rowNode != columnNode; rowNode = rowNode.getTopNode()) {
 			for (SudokuSparseMatrixNode leftNode = rowNode.getLeftNode(); leftNode != rowNode; leftNode = leftNode.getLeftNode()) {
-				leftNode.getTopNode().setBottomNode(leftNode.getBottomNode());
-				leftNode.getBottomNode().setTopNode(leftNode.getTopNode());
+				leftNode.getTopNode().setBottomNode(leftNode);
+				leftNode.getBottomNode().setTopNode(leftNode);
 			}
-			
-			columnNode.getRightNode().setLeftNode(columnNode.getLeftNode());
-			columnNode.getLeftNode().setRightNode(columnNode.getRightNode());
 		}
+		
+		columnNode.getRightNode().setLeftNode(columnNode);
+		columnNode.getLeftNode().setRightNode(columnNode);
 	}
 }
