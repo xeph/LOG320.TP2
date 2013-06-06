@@ -4,7 +4,8 @@ LOG320.TP2
 Description
 -----------
 
-Algorithme de résolution de sudoku en Java. Travail 2 pour le cours LOG320 (Structure de données et algorithmes)
+Algorithme de résolution de sudoku en Java utilisant l''algorithme Dancing
+Links de Donald E. Knuth. Travail 2 pour le cours LOG320 (Structure de données et algorithmes)
 
 Configuration minimale
 ----------------------

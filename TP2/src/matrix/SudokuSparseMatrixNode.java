@@ -1,4 +1,4 @@
-package babouin;
+package matrix;
 
 public class SudokuSparseMatrixNode {
 	

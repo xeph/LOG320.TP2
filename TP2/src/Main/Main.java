@@ -1,104 +1,39 @@
 package Main;
 
-import babouin.SudokuSparseMatrix;
-import babouin.SudokuSparseMatrixNode;
-import solver.Babouin;
-import solver.SudokuSolver;
-
 public class Main {
 
-	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-		/*args = new String[1];
-		args[0] = "-b";
-		
-		if (args[0] == "-o")
-			new solver.SudokuSolverOptimized().solve();
-		else if (args[0] == "-b") { // b pour babouin
-			Babouin.getInstance().solve();
-			new solver.SudokuSolver().solve();
+		if (args.length == 2) {
+			if (args[0] != "" || args[1] != "") {
+				int[][] grid = new int[9][9];
+				grid = reader.SudokuReader.readFile(args[0]);
+				
+				if (args[1] == "-o") { // version optimise
+					matrix.SudokuSparseMatrix ssm = new matrix.SudokuSparseMatrix(grid);
+					ssm.solve();
+				} else if (args[1] == "-n") // version non optimise
+					new solver.SudokuSolver().solve(grid);
+				else { // help
+					System.out.println("Sudoku solver v1.0");
+					System.out.println("par Samuel Beauchemin");
+					System.out.println("Marc-Andre Destrempes");
+					System.out.println("\nUsage:");
+					System.out.println("\t<path>\tChemin du fichier");
+					System.out.println("\t-o\tSolver optimise");
+					System.out.println("\t-n\tSolver non optimise");
+					System.out.println("\nSudokuSolver.jar <path> <-o|-n>");
+				}
+			}
+		} else { // help
+			System.out.println("Sudoku solver v1.0");
+			System.out.println("Samuel Beauchemin");
+			System.out.println("Marc-Andre Destrempes");
+			System.out.println("\nUsage:");
+			System.out.println("\t<path>\tChemin du fichier");
+			System.out.println("\t-o\tSolver optimise");
+			System.out.println("\t-n\tSolver non optimise");
+			System.out.println("\njava -jar SudokuSolver.jar <path> <-o|-n>");
 		}
-		else
-			new solver.SudokuSolver().solve();*/
-		
-		int[][] grid = new int[9][9];
-		
-		// Clear all cells
-	       for( int row = 0; row < 9; row++ )
-	          for( int col = 0; col < 9; col++ )
-	        	  grid[row][col] = 0 ;
-
-	       // Create the initial situation
-	       
-	       //easy puzzle
-	       /*grid[0][0] = 9 ;
-	       grid[0][4] = 2 ;
-	       grid[0][6] = 7 ;
-	       grid[0][7] = 5 ;
-
-	       grid[1][0] = 6 ;
-	       grid[1][4] = 5 ;
-	       grid[1][7] = 4 ;
-
-	       grid[2][1] = 2 ;
-	       grid[2][3] = 4 ;
-	       grid[2][7] = 1 ;
-
-	       grid[3][0] = 2 ;
-	       grid[3][2] = 8 ;
-
-	       grid[4][1] = 7 ;
-	       grid[4][3] = 5 ;
-	       grid[4][5] = 9 ;
-	       grid[4][7] = 6 ;
-
-	       grid[5][6] = 4 ;
-	       grid[5][8] = 1 ;
-
-	       grid[6][1] = 1 ;
-	       grid[6][5] = 5 ;
-	       grid[6][7] = 8 ;
-
-	       grid[7][1] = 9 ;
-	       grid[7][4] = 7 ;
-	       grid[7][8] = 4 ;
-
-	       grid[8][1] = 8 ;
-	       grid[8][2] = 2 ;
-	       grid[8][4] = 4 ;
-	       grid[8][8] = 6 ;*/
-	       
-	       //hard
-	       grid[1][5] = 3;
-	       grid[1][7] = 8;
-	       grid[1][8] = 5;
-	       
-	       grid[2][2] = 1;
-	       grid[2][4] = 2;
-	       
-	       grid[3][3] = 5;
-	       grid[3][5] = 7;
-	       
-	       grid[4][2] = 4;
-	       grid[4][6] = 1;
-	       
-	       grid[5][1] = 9;
-	       
-	       grid[6][1] = 5;
-	       grid[6][7] = 7;
-	       grid[6][8] = 3;
-	       
-	       grid[7][2] = 2;
-	       grid[7][4] = 1;
-	       
-	       grid[8][4] = 4;
-	       grid[8][8] = 9;
-		
-		//SudokuSolver canard = new SudokuSolver();
-		//canard.solve();
-		
-		SudokuSparseMatrix babouin = new SudokuSparseMatrix(grid);
-		babouin.solve();
 	}
 
 }

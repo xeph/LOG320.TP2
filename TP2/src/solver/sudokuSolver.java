@@ -1,27 +1,37 @@
 package solver;
 
+/**
+ * Cette classe a été inspirée de plusieurs sources différentes. En voici la liste :
+ * 
+ * http://www.colloquial.com/games/sudoku/java_sudoku.html
+ */
+
 public class SudokuSolver
 {
 	private static final byte NINE = 9;
 	private static final byte THREE = 3;
 	private static final byte ONE = 1;
 	private static final byte ZERO = 0;
-    private static byte[][] grid = new byte[NINE][NINE];
+    private static int[][] grid = new int[NINE][NINE];
 
-    public void solve()
+    public void solve(int[][] grid)
     {
-    	createModel();
-    	//writeMatrix(grid);
+    	SudokuSolver.grid = grid;
     	long startTime = System.nanoTime();
     	solve(ZERO,ZERO);
     	long endTime = System.nanoTime();
-    	writeMatrix(grid);
+    	writeMatrix(SudokuSolver.grid);
 		System.out.println("Execution time : " + ((double)endTime/1000000 - (double)startTime/1000000) + " milliseconds");
     }
     
-    // iterate through each row of a column
-    // after a column is done, begin the next
-    // column at the first row
+    /**
+     * itere dans chaque ligne d'une colonne
+     * quand une ligne est faite, commencer
+     * la prochaine colonne a la premiere ligne
+     * @param row ligne du sudoku
+     * @param column colonne du sudoku
+     * @return
+     */
     private static final boolean solve(byte row, byte column)
     {	
     	// check if last row is done, if yes change column
@@ -57,8 +67,12 @@ public class SudokuSolver
     	return false;
     }
     
-    // by Bob Carpenter
-    static void writeMatrix(byte[][] solution) {
+    /**
+     * ecrit la matrice en console
+     * par Bob Carpenter
+     * @param solution grille du sudoku
+     */
+    static void writeMatrix(int[][] solution) {
         for (int i = 0; i < 9; ++i) {
             if (i % 3 == 0)
                 System.out.println(" -----------------------");
@@ -75,6 +89,13 @@ public class SudokuSolver
         System.out.println(" -----------------------");
     }
 
+    /**
+     * Valide une insertion de numero
+     * @param row ligne du sudoku
+     * @param column colonne du sudoku
+     * @param number numero du sudoku
+     * @return valide ou non
+     */
     private static final boolean validateInsert(final byte row, final byte column, final byte number)
     {
         boolean isValid = false;
@@ -94,6 +115,12 @@ public class SudokuSolver
         return isValid;
     }
 
+    /**
+     * Valide une ligne
+     * @param row ligne du sudoku
+     * @param number numero a valider
+     * @return valide ou non
+     */
     private static final boolean validateRow(final byte row, final byte number)
     {
         for (byte column = ZERO; column < NINE; column++)
@@ -104,6 +131,12 @@ public class SudokuSolver
         return true;
     }
 
+    /**
+     * Valide une colonne
+     * @param column colonne du sudoku
+     * @param number numero a valider
+     * @return valide ou non
+     */
     private static final boolean validateColumn(final byte column, final byte number)
     {
         for (byte row = ZERO; row < NINE; row++)
@@ -114,6 +147,13 @@ public class SudokuSolver
         return true;
     }
 
+    /**
+     * Valide un carre d'une grille
+     * @param row ligne du sudoku
+     * @param column colonne du sudoku
+     * @param number numero a valider
+     * @return valide ou non
+     */
     private static final boolean validateSquare(final byte row, final byte column, final byte number)
     {
         byte r = (byte) ((row / THREE) * THREE);
@@ -128,80 +168,5 @@ public class SudokuSolver
             }
         }
         return true;
-    }
-    
-    //http://www.heimetli.ch/ffh/simplifiedsudoku.html
-    private static final void createModel()
-    {
-       // Clear all cells
-       for( int row = 0; row < 9; row++ )
-          for( int col = 0; col < 9; col++ )
-        	  grid[row][col] = 0 ;
-
-       // Create the initial situation
-       
-       //easy puzzle
-       /*grid[0][0] = 9 ;
-       grid[0][4] = 2 ;
-       grid[0][6] = 7 ;
-       grid[0][7] = 5 ;
-
-       grid[1][0] = 6 ;
-       grid[1][4] = 5 ;
-       grid[1][7] = 4 ;
-
-       grid[2][1] = 2 ;
-       grid[2][3] = 4 ;
-       grid[2][7] = 1 ;
-
-       grid[3][0] = 2 ;
-       grid[3][2] = 8 ;
-
-       grid[4][1] = 7 ;
-       grid[4][3] = 5 ;
-       grid[4][5] = 9 ;
-       grid[4][7] = 6 ;
-
-       grid[5][6] = 4 ;
-       grid[5][8] = 1 ;
-
-       grid[6][1] = 1 ;
-       grid[6][5] = 5 ;
-       grid[6][7] = 8 ;
-
-       grid[7][1] = 9 ;
-       grid[7][4] = 7 ;
-       grid[7][8] = 4 ;
-
-       grid[8][1] = 8 ;
-       grid[8][2] = 2 ;
-       grid[8][4] = 4 ;
-       grid[8][8] = 6 ;*/
-       
-       //hard puzzle
-       grid[1][5] = 3;
-       grid[1][7] = 8;
-       grid[1][8] = 5;
-       
-       grid[2][2] = 1;
-       grid[2][4] = 2;
-       
-       grid[3][3] = 5;
-       grid[3][5] = 7;
-       
-       grid[4][2] = 4;
-       grid[4][6] = 1;
-       
-       grid[5][1] = 9;
-       
-       grid[6][1] = 5;
-       grid[6][7] = 7;
-       grid[6][8] = 3;
-       
-       grid[7][2] = 2;
-       grid[7][4] = 1;
-       
-       grid[8][4] = 4;
-       grid[8][8] = 9;
     }
 }
