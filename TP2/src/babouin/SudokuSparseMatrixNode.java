@@ -4,6 +4,7 @@ public class SudokuSparseMatrixNode {
 	
 	private int column;
 	private int row;
+	private int childNodeCount;
 	private SudokuSparseMatrixNode columnNode;
 	private SudokuSparseMatrixNode leftNode;
 	private SudokuSparseMatrixNode rightNode;
@@ -56,6 +57,7 @@ public class SudokuSparseMatrixNode {
 	}
 	
 	public void setColumnNode(SudokuSparseMatrixNode columnNode) {
+		columnNode.incrementChildNodeCount();
 		this.columnNode = columnNode;
 	}
 	
@@ -65,5 +67,20 @@ public class SudokuSparseMatrixNode {
 	
 	public int getRow() {
 		return this.row;
+	}
+	
+	public void incrementChildNodeCount() {
+		++this.childNodeCount;
+	}
+	
+	public void decrementChildNodeCount() {
+		--this.childNodeCount;
+		if (this.childNodeCount < 0) {
+			System.out.println("Error detected");
+		}
+	}
+	
+	public int getChildNodeCount() {
+		return this.childNodeCount;
 	}
 }

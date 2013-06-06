@@ -1,5 +1,9 @@
 package babouin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Stack;
 
 /**
@@ -28,6 +32,7 @@ public class SudokuSparseMatrix {
 	private static final int MATRIX_LENGTH = GRID_SIZE*GRID_SIZE*CONSTRAINT_COUNT;
 	private SudokuSparseMatrixNode root;
 	private boolean hasBeenPrinted;
+	private int solutionCount;
 	private Stack<SudokuSparseMatrixNode> solution;
 	private long startTime;
 	private long solveTime;
@@ -39,11 +44,12 @@ public class SudokuSparseMatrix {
 		this.startTime = System.nanoTime();
 		this.solution = new Stack<SudokuSparseMatrixNode>();
 		this.hasBeenPrinted = false;
+		this.solutionCount = 0;
 		initialize(sudokuGrid);
 		//test();
 	}
 	
-	private void test() {
+	private final void test() {
 		for( int row = 0; row < 729; row++ )
 			for( int col = 0; col < 324; col++ )
 				this.testGrid[row][col] = 0;
@@ -62,7 +68,7 @@ public class SudokuSparseMatrix {
 		}
 	}
 	
-	public void solve() {
+	public final void solve() {
 		this.solveTime = System.nanoTime();
 		System.out.println("Initializing time : " + ((double)this.solveTime/1000000 - (double)this.startTime/1000000) + " milliseconds");
 		search();
@@ -75,11 +81,12 @@ public class SudokuSparseMatrix {
 		
 		this.endTime = System.nanoTime();
 		
+		System.out.println("Nombre de solution(s) trouvée(s) : " + this.solutionCount);
 		System.out.println("Solving time : " + ((double)this.printTime/1000000 - (double)this.solveTime/1000000) + " milliseconds");
 		System.out.println("Printing time : " + ((double)this.endTime/1000000 - (double)this.printTime/1000000) + " milliseconds");
 	}
 	
-	private void initialize(int[][] sudokuGrid) {
+	private final void initialize(int[][] sudokuGrid) {
 		this.root = new SudokuSparseMatrixNode(0, 0);
 		SudokuSparseMatrixNode newNode;
 		
@@ -89,6 +96,7 @@ public class SudokuSparseMatrix {
 			newNode.setRightNode(this.root);
 			this.root.getLeftNode().setRightNode(newNode);
 			this.root.setLeftNode(newNode);
+			//this.columnList.add(newNode);
 		}
 		
 		for (int row = 0; row != GRID_SIZE; ++row) {
@@ -115,50 +123,54 @@ public class SudokuSparseMatrix {
 	 *     Recurse with the new state.
 	 * "Undo" all the things removed while trying row R; restore to previous state.
 	 */
-	private void search() {
-		SudokuSparseMatrixNode currentColumnNode = this.root.getRightNode();
-		
-		if (currentColumnNode == this.root) {
+	private final void search() {
+		if (this.root.getRightNode() == this.root) {
 			printCurrentSolution();
-		} else {
-			boolean hasEmptyColumn = false;
+		} else if (this.root.getRightNode().getBottomNode() != this.root.getRightNode()){
+			ArrayList<SudokuSparseMatrixNode> columnList = new ArrayList<SudokuSparseMatrixNode>();
 			
-			for (SudokuSparseMatrixNode columnNode = currentColumnNode; columnNode != this.root && !hasEmptyColumn; columnNode = columnNode.getRightNode()) {
-				if (columnNode.getBottomNode() == columnNode) {
-					hasEmptyColumn = true;
-				}
+			for (SudokuSparseMatrixNode columnNode = this.root.getRightNode(); columnNode != this.root; columnNode = columnNode.getRightNode()) {
+				columnList.add(columnNode);
 			}
 			
-			if (!hasEmptyColumn) {
-				cover(currentColumnNode);
-				
-				for (SudokuSparseMatrixNode rowNode = currentColumnNode.getBottomNode(); rowNode != currentColumnNode && !this.hasBeenPrinted; rowNode = rowNode.getBottomNode()) {
-					this.solution.add(rowNode);
-					for (SudokuSparseMatrixNode rightNode = rowNode.getRightNode(); rightNode != rowNode; rightNode = rightNode.getRightNode()) {
-						cover(rightNode.getColumnNode());
+			Collections.sort(columnList, new Comparator<SudokuSparseMatrixNode>(){
+				@Override
+				public int compare(SudokuSparseMatrixNode node1,
+						SudokuSparseMatrixNode node2) {
+					if (node1.getChildNodeCount() == node2.getChildNodeCount()) {
+						return 0;
 					}
-					
-					search();
-					
-					if (!this.hasBeenPrinted) {
-						
-						for (SudokuSparseMatrixNode leftNode = rowNode.getLeftNode(); leftNode != rowNode; leftNode = leftNode.getLeftNode()) {
-							uncover(leftNode.getColumnNode());
-						}
-						
-						this.solution.pop();
-					}
+			             
+			        return node1.getChildNodeCount() < node2.getChildNodeCount() ? -1 : 1;
+				}
+			});
+			
+			SudokuSparseMatrixNode currentColumnNode = columnList.get(0);
+			
+			cover(currentColumnNode);
+			
+			for (SudokuSparseMatrixNode rowNode = currentColumnNode.getBottomNode(); rowNode != currentColumnNode; rowNode = rowNode.getBottomNode()) {
+				this.solution.add(rowNode);
+				for (SudokuSparseMatrixNode rightNode = rowNode.getRightNode(); rightNode != rowNode; rightNode = rightNode.getRightNode()) {
+					cover(rightNode.getColumnNode());
 				}
 				
-				if (!this.hasBeenPrinted) {
-					uncover(currentColumnNode);
+				search();
+				
+				for (SudokuSparseMatrixNode leftNode = rowNode.getLeftNode(); leftNode != rowNode; leftNode = leftNode.getLeftNode()) {
+					uncover(leftNode.getColumnNode());
 				}
+				
+				this.solution.pop();
 			}
+			
+			uncover(currentColumnNode);
 		}
 	}
 	
-	private void printCurrentSolution() {
+	private final void printCurrentSolution() {
 		this.printTime = System.nanoTime();
+		++this.solutionCount;
 		
 		@SuppressWarnings("unchecked")
 		Stack<SudokuSparseMatrixNode> solution = (Stack<SudokuSparseMatrixNode>)this.solution.clone();
@@ -193,7 +205,7 @@ public class SudokuSparseMatrix {
         this.hasBeenPrinted = true;
 	}
 	
-	private void insertRow(int row, int column, int value) {
+	private final void insertRow(int row, int column, int value) {
 		SudokuSparseMatrixNode columnNode = this.root.getRightNode();
 		SudokuSparseMatrixNode newNode = null;
 		
@@ -226,7 +238,7 @@ public class SudokuSparseMatrix {
 		newNode = insertNode(row, column, value, columnNode, newNode);
 	}
 	
-	private SudokuSparseMatrixNode insertNode(int row, int column, int value,
+	private final SudokuSparseMatrixNode insertNode(int row, int column, int value,
 			SudokuSparseMatrixNode columnNode,
 			SudokuSparseMatrixNode lastInsertedNode) {
 		SudokuSparseMatrixNode newNode = new SudokuSparseMatrixNode(
@@ -259,6 +271,7 @@ public class SudokuSparseMatrix {
 			for (SudokuSparseMatrixNode rightNode = rowNode.getRightNode(); rightNode != rowNode; rightNode = rightNode.getRightNode()) {
 				rightNode.getTopNode().setBottomNode(rightNode.getBottomNode());
 				rightNode.getBottomNode().setTopNode(rightNode.getTopNode());
+				rightNode.getColumnNode().decrementChildNodeCount();
 			}
 		}
 	}
@@ -268,10 +281,27 @@ public class SudokuSparseMatrix {
 			for (SudokuSparseMatrixNode leftNode = rowNode.getLeftNode(); leftNode != rowNode; leftNode = leftNode.getLeftNode()) {
 				leftNode.getTopNode().setBottomNode(leftNode);
 				leftNode.getBottomNode().setTopNode(leftNode);
+				leftNode.getColumnNode().incrementChildNodeCount();
 			}
 		}
 		
 		columnNode.getRightNode().setLeftNode(columnNode);
 		columnNode.getLeftNode().setRightNode(columnNode);
 	}
+	
+	/*private final SudokuSparseMatrixNode chooseNextColumnNode() {
+		Collections.sort(this.columnList, new Comparator<SudokuSparseMatrixNode>(){
+			@Override
+			public int compare(SudokuSparseMatrixNode node1,
+					SudokuSparseMatrixNode node2) {
+				if (node1.getChildNodeCount() == node2.getChildNodeCount()) {
+					return 0;
+				}
+		             
+		        return node1.getChildNodeCount() < node2.getChildNodeCount() ? -1 : 1;
+			}
+		});
+		
+		return this.columnList.get(0);
+	}*/
 }

@@ -31,6 +31,44 @@ public class Main {
 	       // Create the initial situation
 	       
 	       //easy puzzle
+	       /*grid[0][0] = 9 ;
+	       grid[0][4] = 2 ;
+	       grid[0][6] = 7 ;
+	       grid[0][7] = 5 ;
+
+	       grid[1][0] = 6 ;
+	       grid[1][4] = 5 ;
+	       grid[1][7] = 4 ;
+
+	       grid[2][1] = 2 ;
+	       grid[2][3] = 4 ;
+	       grid[2][7] = 1 ;
+
+	       grid[3][0] = 2 ;
+	       grid[3][2] = 8 ;
+
+	       grid[4][1] = 7 ;
+	       grid[4][3] = 5 ;
+	       grid[4][5] = 9 ;
+	       grid[4][7] = 6 ;
+
+	       grid[5][6] = 4 ;
+	       grid[5][8] = 1 ;
+
+	       grid[6][1] = 1 ;
+	       grid[6][5] = 5 ;
+	       grid[6][7] = 8 ;
+
+	       grid[7][1] = 9 ;
+	       grid[7][4] = 7 ;
+	       grid[7][8] = 4 ;
+
+	       grid[8][1] = 8 ;
+	       grid[8][2] = 2 ;
+	       grid[8][4] = 4 ;
+	       grid[8][8] = 6 ;*/
+	       
+	       //hard
 	       grid[1][5] = 3;
 	       grid[1][7] = 8;
 	       grid[1][8] = 5;
@@ -56,8 +94,8 @@ public class Main {
 	       grid[8][4] = 4;
 	       grid[8][8] = 9;
 		
-		SudokuSolver canard = new SudokuSolver();
-		canard.solve();
+		//SudokuSolver canard = new SudokuSolver();
+		//canard.solve();
 		
 		SudokuSparseMatrix babouin = new SudokuSparseMatrix(grid);
 		babouin.solve();
